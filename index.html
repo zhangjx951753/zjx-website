@@ -1,0 +1,617 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
+    <title>龙江志愿·学生提分力AI快诊</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: #f2f5f9;
+            font-family: 'Segoe UI', 'Roboto', 'Noto Sans', system-ui, -apple-system, 'Helvetica Neue', sans-serif;
+            padding: 1.5rem 1rem;
+            color: #1e2a3e;
+        }
+
+        .container {
+            max-width: 1100px;
+            margin: 0 auto;
+        }
+
+        /* 头部 */
+        .hero {
+            background: linear-gradient(135deg, #1e4a6e, #0e2e44);
+            border-radius: 2rem;
+            padding: 1.8rem 1.5rem;
+            color: white;
+            margin-bottom: 2rem;
+            text-align: center;
+            box-shadow: 0 12px 20px -8px rgba(0,0,0,0.1);
+        }
+        .hero h1 {
+            font-size: 1.8rem;
+            letter-spacing: -0.3px;
+            margin-bottom: 0.5rem;
+        }
+        .hero .price {
+            background: #ffb347;
+            display: inline-block;
+            padding: 0.2rem 1rem;
+            border-radius: 40px;
+            font-size: 0.9rem;
+            font-weight: bold;
+            margin-top: 0.5rem;
+        }
+        .hero .sub {
+            opacity: 0.9;
+            font-size: 0.85rem;
+            margin-top: 0.6rem;
+        }
+
+        /* 导航锚点 */
+        .nav-tabs {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            background: white;
+            border-radius: 60px;
+            padding: 0.5rem;
+            margin-bottom: 1.8rem;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+            justify-content: center;
+        }
+        .nav-btn {
+            background: #eef2f8;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 40px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: 0.2s;
+            color: #2c5a8c;
+        }
+        .nav-btn:hover {
+            background: #d9e2ef;
+        }
+
+        /* 问卷卡片 */
+        .quiz-card {
+            background: white;
+            border-radius: 2rem;
+            box-shadow: 0 15px 30px -12px rgba(0,0,0,0.1);
+            overflow: hidden;
+            margin-bottom: 2rem;
+        }
+        .section {
+            border-bottom: 8px solid #f0f4fa;
+        }
+        .section-header {
+            background: #f8fafd;
+            padding: 1rem 1.5rem;
+            font-weight: 800;
+            font-size: 1.2rem;
+            border-left: 6px solid #ffb347;
+            margin: 0;
+            color: #1e4a6e;
+        }
+        .question-item {
+            padding: 1.2rem 1.5rem;
+            border-bottom: 1px solid #e9edf2;
+            transition: background 0.1s;
+        }
+        .q-text {
+            font-weight: 600;
+            font-size: 0.95rem;
+            margin-bottom: 0.7rem;
+            display: flex;
+            align-items: baseline;
+            gap: 0.6rem;
+            flex-wrap: wrap;
+        }
+        .q-num {
+            background: #eef2fa;
+            border-radius: 30px;
+            padding: 0.2rem 0.7rem;
+            font-size: 0.7rem;
+            font-weight: 600;
+            color: #1e4a76;
+        }
+        .options {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.6rem;
+            margin-top: 0.5rem;
+        }
+        .opt {
+            flex: 1;
+            min-width: 100px;
+            background: #f8fafc;
+            border-radius: 60px;
+            padding: 0.4rem 0.6rem;
+            text-align: center;
+            cursor: pointer;
+            transition: 0.1s;
+            border: 1px solid #e2e8f0;
+            font-size: 0.8rem;
+        }
+        .opt.selected {
+            background: #1e4a76;
+            color: white;
+            border-color: #0f2c44;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+        }
+        .opt:hover:not(.selected) {
+            background: #e6edf6;
+        }
+        .opt span:first-child {
+            font-weight: 700;
+            margin-right: 4px;
+        }
+
+        /* 按钮 */
+        .action-bar {
+            padding: 1.5rem;
+            background: #f9fbfd;
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+        .btn {
+            border: none;
+            padding: 0.7rem 1.8rem;
+            border-radius: 60px;
+            font-weight: 700;
+            font-size: 0.9rem;
+            cursor: pointer;
+            font-family: inherit;
+            transition: 0.2s;
+        }
+        .btn-primary {
+            background: #1e4a76;
+            color: white;
+        }
+        .btn-primary:hover {
+            background: #0f3b5e;
+            transform: translateY(-2px);
+        }
+        .btn-secondary {
+            background: #e2e8f0;
+            color: #2d3e50;
+        }
+        .btn-secondary:hover {
+            background: #cbd5e1;
+        }
+
+        /* 报告区域 */
+        .report-card {
+            background: white;
+            border-radius: 2rem;
+            padding: 1.8rem;
+            margin-top: 1rem;
+            box-shadow: 0 12px 25px -8px rgba(0,0,0,0.08);
+            border: 1px solid #eef2f8;
+        }
+        .report-title {
+            font-size: 1.6rem;
+            font-weight: 800;
+            border-left: 6px solid #ffb347;
+            padding-left: 1rem;
+            margin-bottom: 1.2rem;
+        }
+        .total-score-box {
+            background: #eef3fc;
+            border-radius: 1.5rem;
+            padding: 1rem;
+            text-align: center;
+            margin-bottom: 1.5rem;
+        }
+        .total-score {
+            font-size: 2.2rem;
+            font-weight: 800;
+            color: #1e4a76;
+        }
+        .dimension-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 1rem;
+            margin: 1.5rem 0;
+        }
+        .dim-card {
+            background: #f8fafc;
+            border-radius: 1.2rem;
+            padding: 0.9rem;
+            text-align: center;
+        }
+        .dim-name {
+            font-weight: 700;
+            font-size: 0.9rem;
+        }
+        .dim-score {
+            font-size: 1.5rem;
+            font-weight: 800;
+            color: #1e4a76;
+        }
+        .progress-bar {
+            height: 8px;
+            background: #e2e8f0;
+            border-radius: 10px;
+            margin: 0.6rem 0;
+            overflow: hidden;
+        }
+        .progress-fill {
+            height: 100%;
+            background: #ffb347;
+            width: 0%;
+            border-radius: 10px;
+        }
+        .insight {
+            background: #fff6e8;
+            border-radius: 1.2rem;
+            padding: 1rem 1.2rem;
+            margin-top: 1rem;
+            font-size: 0.9rem;
+            line-height: 1.5;
+        }
+        .footer-note {
+            text-align: center;
+            font-size: 0.7rem;
+            color: #7e95af;
+            margin-top: 1.5rem;
+        }
+        .error-msg {
+            background: #ffefef;
+            color: #b91c1c;
+            border-radius: 60px;
+            padding: 0.5rem;
+            text-align: center;
+            margin: 0.5rem 0;
+        }
+        @media (max-width: 680px) {
+            .opt {
+                min-width: 70px;
+                font-size: 0.7rem;
+            }
+            .question-item {
+                padding: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="hero">
+        <h1>📊 学生提分力 · AI快诊</h1>
+        <div class="price">龙江志愿专属 9.9元版</div>
+        <div class="sub">40题精准诊断学习卡点 | 5大维度解锁提分系统</div>
+    </div>
+
+    <!-- 板块导航 -->
+    <div class="nav-tabs" id="navTabs"></div>
+
+    <div class="quiz-card">
+        <div id="questionsContainer"></div>
+        <div class="action-bar">
+            <button class="btn btn-secondary" id="resetBtn">🔄 重置所有答案</button>
+            <button class="btn btn-primary" id="submitBtn">✨ 生成提分报告</button>
+        </div>
+    </div>
+
+    <div id="reportContainer" style="display: none;"></div>
+    <div class="footer-note">✔ 基于真实学习行为评估 · 帮助定位家庭提分系统卡点</div>
+</div>
+
+<script>
+    // --------------------------------------------------------------
+    // 根据word文档构建完整题库 (40题，含板块、选项分值)
+    // 第34题（最不喜欢学科）不计入总分，其他正常计分
+    // --------------------------------------------------------------
+    const questionsData = [
+        // 板块1: AI卷面提分 (10题)
+        { id:1, text:"孩子考试丢分，最常见的是哪种情况？", options:[{label:"题目没读懂",score:1},{label:"会做但粗心",score:2},{label:"知识点没掌握",score:3}], section:"AI卷面提分", scored:true },
+        { id:2, text:"孩子拿到一道阅读理解题，通常第一步会做什么？", options:[{label:"直接看文章",score:1},{label:"先看题目再读文章",score:2},{label:"圈出题干关键词",score:3}], section:"AI卷面提分", scored:true },
+        { id:3, text:"孩子写作文时，最常卡在哪一步？", options:[{label:"不知道写什么",score:1},{label:"有话但写不具体",score:2},{label:"结构混乱",score:3}], section:"AI卷面提分", scored:true },
+        { id:4, text:"孩子做完一道数学题，会检查吗？", options:[{label:"从不检查",score:1},{label:"偶尔检查",score:2},{label:"会用不同方法验证",score:3}], section:"AI卷面提分", scored:true },
+        { id:5, text:"孩子遇到不会的题，通常怎么办？", options:[{label:"空着跳过",score:1},{label:"搜手机或问人",score:2},{label:"自己反复试",score:3}], section:"AI卷面提分", scored:true },
+        { id:6, text:"孩子考试时，时间够用吗？", options:[{label:"经常做不完",score:1},{label:"刚好做完",score:2},{label:"有时间检查",score:3}], section:"AI卷面提分", scored:true },
+        { id:7, text:"孩子做完卷子，会检查哪些内容？", options:[{label:"只看是否漏题",score:1},{label:"重算一遍",score:2},{label:"换思路验证",score:3}], section:"AI卷面提分", scored:true },
+        { id:8, text:"孩子做错题后，老师讲完，他能独立重做对吗？", options:[{label:"经常还是错",score:1},{label:"当场会，过几天又错",score:2},{label:"能真正掌握",score:3}], section:"AI卷面提分", scored:true },
+        { id:9, text:"孩子的草稿纸，通常是什么状态？", options:[{label:"没有草稿纸",score:1},{label:"乱涂乱画",score:2},{label:"整齐有序",score:3}], section:"AI卷面提分", scored:true },
+        { id:10, text:"孩子考试前，通常怎么复习？", options:[{label:"不复习",score:1},{label:"翻书看",score:2},{label:"做错题本",score:3}], section:"AI卷面提分", scored:true },
+        // 板块2: 父母认知 (8题)
+        { id:11, text:"您认为孩子成绩上不去，最主要的原因是什么？", options:[{label:"孩子不够努力",score:1},{label:"方法不对",score:2},{label:"家庭环境或情绪影响",score:3}], section:"父母认知", scored:true },
+        { id:12, text:"您平时辅导孩子作业，最常说的话是？", options:[{label:"“快点写！”",score:1},{label:"“这道题怎么又错了？”",score:2},{label:"“你是怎么想的？”",score:3}], section:"父母认知", scored:true },
+        { id:13, text:"孩子考试成绩不理想，您的第一反应是？", options:[{label:"生气、批评",score:1},{label:"焦虑、担心",score:2},{label:"和孩子一起分析原因",score:3}], section:"父母认知", scored:true },
+        { id:14, text:"您觉得“提分”最重要的是什么？", options:[{label:"多做题",score:1},{label:"找好老师补课",score:2},{label:"培养孩子自主学习能力",score:3}], section:"父母认知", scored:true },
+        { id:15, text:"您认为孩子学习不好的根本原因是什么？", options:[{label:"孩子智商不够",score:1},{label:"孩子态度问题",score:2},{label:"是家庭学习系统出了问题",score:3}], section:"父母认知", scored:true },
+        { id:16, text:"辅导作业时，您容易发火吗？", options:[{label:"经常发火",score:1},{label:"偶尔发火",score:2},{label:"很少发火",score:3}], section:"父母认知", scored:true },
+        { id:17, text:"您觉得“陪学”最重要的一点是什么？", options:[{label:"盯着孩子写完",score:1},{label:"帮孩子讲题",score:2},{label:"帮孩子建立方法",score:3}], section:"父母认知", scored:true },
+        { id:18, text:"您是否觉得孩子的问题，其实和您自己有关？", options:[{label:"没想过",score:1},{label:"偶尔觉得",score:2},{label:"经常反思自己",score:3}], section:"父母认知", scored:true },
+        // 板块3: 学生提分力认知 (8题)
+        { id:19, text:"孩子觉得自己学习成绩不好，是因为什么？", options:[{label:"我笨",score:1},{label:"我不够努力",score:2},{label:"方法不对",score:3}], section:"学生提分力认知", scored:true },
+        { id:20, text:"孩子遇到难题，会对自己说什么？", options:[{label:"“我就是不会”",score:1},{label:"“好难，不想做了”",score:2},{label:"“我再想想”",score:3}], section:"学生提分力认知", scored:true },
+        { id:21, text:"孩子相信“努力就能学好”吗？", options:[{label:"不相信",score:1},{label:"半信半疑",score:2},{label:"相信",score:3}], section:"学生提分力认知", scored:true },
+        { id:22, text:"孩子对“提分”有明确目标吗？", options:[{label:"没有目标",score:1},{label:"有目标但不知道怎么实现",score:2},{label:"有目标也知道怎么做",score:3}], section:"学生提分力认知", scored:true },
+        { id:23, text:"孩子觉得学习是为了谁？", options:[{label:"为了爸妈",score:1},{label:"为了老师",score:2},{label:"为了自己",score:3}], section:"学生提分力认知", scored:true },
+        { id:24, text:"孩子考得好时，最希望得到什么？", options:[{label:"物质奖励",score:1},{label:"表扬",score:2},{label:"被看见努力的过程",score:3}], section:"学生提分力认知", scored:true },
+        { id:25, text:"孩子觉得自己的学习方法怎么样？", options:[{label:"没有方法",score:1},{label:"有方法但不系统",score:2},{label:"有一套自己的方法",score:3}], section:"学生提分力认知", scored:true },
+        { id:26, text:"孩子如何看待考试？", options:[{label:"可怕的事",score:1},{label:"不得不面对的事",score:2},{label:"检验自己的机会",score:3}], section:"学生提分力认知", scored:true },
+        // 板块4: 提分训练习惯 (7题)
+        { id:27, text:"孩子放学回家，通常多久开始写作业？", options:[{label:"1小时以上",score:1},{label:"30-60分钟",score:2},{label:"30分钟内",score:3}], section:"提分训练习惯", scored:true },
+        { id:28, text:"孩子写作业时，会分心吗？", options:[{label:"经常分心",score:1},{label:"偶尔分心",score:2},{label:"能专注完成",score:3}], section:"提分训练习惯", scored:true },
+        { id:29, text:"孩子有错题本吗？", options:[{label:"没有",score:1},{label:"有，只抄答案",score:2},{label:"有，会分析原因",score:3}], section:"提分训练习惯", scored:true },
+        { id:30, text:"孩子会做学习计划吗？", options:[{label:"从不",score:1},{label:"偶尔",score:2},{label:"经常",score:3}], section:"提分训练习惯", scored:true },
+        { id:31, text:"孩子写完作业会检查吗？", options:[{label:"从不",score:1},{label:"偶尔",score:2},{label:"每次都会",score:3}], section:"提分训练习惯", scored:true },
+        { id:32, text:"孩子遇到不懂的知识点，会主动问老师吗？", options:[{label:"从不",score:1},{label:"偶尔",score:2},{label:"经常",score:3}], section:"提分训练习惯", scored:true },
+        { id:33, text:"孩子每天有固定的阅读时间吗？", options:[{label:"没有",score:1},{label:"偶尔有",score:2},{label:"每天都有",score:3}], section:"提分训练习惯", scored:true },
+        // 板块5: 学科抵触度 (7题，第34题不计入总分)
+        { id:34, text:"孩子最不喜欢哪个学科？", options:[{label:"语文",score:1},{label:"数学",score:2},{label:"英语",score:3}], section:"学科抵触度", scored:false, note:"仅统计偏好" },
+        { id:35, text:"孩子提到不喜欢的学科时，是什么反应？", options:[{label:"烦躁、逃避",score:1},{label:"抱怨",score:2},{label:"说“就是不会”",score:3}], section:"学科抵触度", scored:true },
+        { id:36, text:"孩子有没有说过“我不想上学”？", options:[{label:"经常说",score:1},{label:"偶尔说",score:2},{label:"从没说过",score:3}], section:"学科抵触度", scored:true },
+        { id:37, text:"孩子写作业时，会先把喜欢的学科写完吗？", options:[{label:"是，先写喜欢的",score:1},{label:"看心情",score:2},{label:"按计划写",score:3}], section:"学科抵触度", scored:true },
+        { id:38, text:"孩子考试成绩差时，会表现出什么情绪？", options:[{label:"无所谓",score:1},{label:"沮丧但不行动",score:2},{label:"难过并想改进",score:3}], section:"学科抵触度", scored:true },
+        { id:39, text:"孩子会因为某个老师而讨厌一门课吗？", options:[{label:"经常",score:1},{label:"偶尔",score:2},{label:"不会",score:3}], section:"学科抵触度", scored:true },
+        { id:40, text:"孩子有没有因为学习压力出现过身体不适（头疼、胃疼等）？", options:[{label:"经常",score:1},{label:"偶尔",score:2},{label:"从未",score:3}], section:"学科抵触度", scored:true }
+    ];
+
+    // 板块中文映射及最高分 (有效计分题)
+    const sectionsMap = {
+        "AI卷面提分": { name: "📄 AI卷面提分", maxScore: 30, count:10 },   //10题*3
+        "父母认知": { name: "👨‍👩 父母认知", maxScore: 24, count:8 },
+        "学生提分力认知": { name: "🧠 学生认知", maxScore: 24, count:8 },
+        "提分训练习惯": { name: "📚 训练习惯", maxScore: 21, count:7 },
+        "学科抵触度": { name: "❤️ 学科抵触度", maxScore: 18, count:6 }   // 只有6题计分
+    };
+    // 补充总有效题数：10+8+8+7+6 = 39题，总分范围39~117
+    const totalMaxScore = 117;
+
+    // 存储答案: answers数组对应每个问题id (1-40) 存储分值 (null表示未选)
+    let userAnswers = new Array(41).fill(null); // 索引1~40
+
+    // 渲染所有题目
+    function renderQuestions() {
+        const container = document.getElementById('questionsContainer');
+        container.innerHTML = '';
+        let currentSection = '';
+        let sectionDiv = null;
+
+        questionsData.forEach((q, idx) => {
+            if (q.section !== currentSection) {
+                currentSection = q.section;
+                sectionDiv = document.createElement('div');
+                sectionDiv.className = 'section';
+                const header = document.createElement('div');
+                header.className = 'section-header';
+                let icon = '';
+                if (currentSection === 'AI卷面提分') icon = '✍️';
+                else if (currentSection === '父母认知') icon = '🏠';
+                else if (currentSection === '学生提分力认知') icon = '🎯';
+                else if (currentSection === '提分训练习惯') icon = '⏰';
+                else icon = '😟';
+                header.innerHTML = `${icon} ${currentSection} · ${sectionsMap[currentSection]?.name || currentSection}`;
+                sectionDiv.appendChild(header);
+                container.appendChild(sectionDiv);
+            }
+            const qDiv = document.createElement('div');
+            qDiv.className = 'question-item';
+            qDiv.id = `q-${q.id}`;
+            const qTextDiv = document.createElement('div');
+            qTextDiv.className = 'q-text';
+            qTextDiv.innerHTML = `<span class="q-num">${q.id}</span><span>${q.text}</span>`;
+            const optsDiv = document.createElement('div');
+            optsDiv.className = 'options';
+            q.options.forEach((opt, optIdx) => {
+                const optSpan = document.createElement('div');
+                optSpan.className = 'opt';
+                optSpan.setAttribute('data-val', opt.score);
+                optSpan.innerHTML = `<span>${opt.score}分</span> ${opt.label}`;
+                // 高亮当前选中
+                if (userAnswers[q.id] === opt.score) {
+                    optSpan.classList.add('selected');
+                }
+                optSpan.addEventListener('click', () => {
+                    // 更新答案
+                    userAnswers[q.id] = opt.score;
+                    // 更新同组其他选项样式
+                    const siblings = optsDiv.querySelectorAll('.opt');
+                    siblings.forEach(el => el.classList.remove('selected'));
+                    optSpan.classList.add('selected');
+                });
+                optsDiv.appendChild(optSpan);
+            });
+            qDiv.appendChild(qTextDiv);
+            qDiv.appendChild(optsDiv);
+            sectionDiv.appendChild(qDiv);
+        });
+    }
+
+    // 重置所有答案
+    function resetAnswers() {
+        for (let i = 1; i <= 40; i++) {
+            userAnswers[i] = null;
+        }
+        renderQuestions();
+        document.getElementById('reportContainer').style.display = 'none';
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+        showToast("✅ 所有答案已清空，可重新测评", "#eef2fa");
+    }
+
+    function showToast(msg, bg) {
+        let toast = document.querySelector('.temp-toast');
+        if(toast) toast.remove();
+        toast = document.createElement('div');
+        toast.className = 'temp-toast';
+        toast.innerText = msg;
+        toast.style.position = 'fixed';
+        toast.style.bottom = '20px';
+        toast.style.left = '50%';
+        toast.style.transform = 'translateX(-50%)';
+        toast.style.backgroundColor = bg || '#1e4a76';
+        toast.style.color = '#1e2a3e';
+        toast.style.padding = '0.5rem 1rem';
+        toast.style.borderRadius = '40px';
+        toast.style.fontSize = '0.8rem';
+        toast.style.zIndex = '999';
+        toast.style.boxShadow = '0 2px 10px rgba(0,0,0,0.1)';
+        document.body.appendChild(toast);
+        setTimeout(() => toast.remove(), 2500);
+    }
+
+    // 验证完整性
+    function isAllAnswered() {
+        const missing = [];
+        for (let i = 1; i <= 40; i++) {
+            if (userAnswers[i] === null) missing.push(i);
+        }
+        if (missing.length) {
+            const first = missing[0];
+            const el = document.getElementById(`q-${first}`);
+            if (el) el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            showToast(`❌ 还有 ${missing.length} 道题未作答 (第${first}题)`, "#ffefef");
+            return false;
+        }
+        return true;
+    }
+
+    // 计算总分及维度得分
+    function computeScores() {
+        let dimScores = {
+            "AI卷面提分": 0,
+            "父母认知": 0,
+            "学生提分力认知": 0,
+            "提分训练习惯": 0,
+            "学科抵触度": 0
+        };
+        let total = 0;
+        questionsData.forEach(q => {
+            const score = userAnswers[q.id];
+            if (score === null) return;
+            if (q.scored === true) {
+                total += score;
+                dimScores[q.section] += score;
+            }
+        });
+        return { total, dimScores };
+    }
+
+    // 生成诊断与报告html
+    function generateReport() {
+        if (!isAllAnswered()) return null;
+
+        const { total, dimScores } = computeScores();
+        const percent = Math.round((total / totalMaxScore) * 100);
+        // 诊断结论 (基于总分117)
+        let diagnosis = "", recommend = "", coreCard = "";
+        if (total >= 100) { diagnosis = "提分力良好"; coreCard = "整体状态不错，保持习惯即可"; recommend = "199读书会（巩固提升）"; }
+        else if (total >= 80) { diagnosis = "轻度卡点"; coreCard = "方法或习惯有提升空间"; recommend = "199读书会"; }
+        else if (total >= 60) { diagnosis = "中度卡点"; coreCard = "存在明显方法缺失或情绪影响"; recommend = "199读书会 + 399训练营"; }
+        else { diagnosis = "重度卡点"; coreCard = "系统性问题，需深度干预"; recommend = "199读书会 + 500诊断"; }
+
+        // 各维度详细数据
+        const dimDetails = [];
+        for (let [sec, val] of Object.entries(dimScores)) {
+            const maxSec = sectionsMap[sec].maxScore;
+            const ratio = (val / maxSec) * 100;
+            let level = "", suggestion = "";
+            if (ratio >= 75) { level = "优秀"; suggestion = "继续保持，可成为榜样。"; }
+            else if (ratio >= 55) { level = "良好"; suggestion = "有基础，系统强化更佳。"; }
+            else if (ratio >= 35) { level = "中等"; suggestion = "关注该板块的方法与情绪引导。"; }
+            else { level = "待提升"; suggestion = "建议专项突破，结合199读书会对应模块。"; }
+            dimDetails.push({ name: sectionsMap[sec].name, score: val, max: maxSec, ratio, level, suggestion, key: sec });
+        }
+
+        // 学科偏好特殊提取 (第34题)
+        let dislikeSubject = "未选择";
+        if (userAnswers[34] !== null) {
+            const optMap = {1:"语文",2:"数学",3:"英语"};
+            dislikeSubject = optMap[userAnswers[34]] || "未知";
+        }
+
+        // 最强最弱维度建议
+        const sorted = [...dimDetails].sort((a,b) => b.score - a.score);
+        const strongest = sorted[0];
+        const weakest = sorted[sorted.length-1];
+
+        const insightHtml = `
+            <div class="report-card">
+                <div class="report-title">📊 提分力诊断报告</div>
+                <div class="total-score-box">
+                    <div>综合提分力总分</div>
+                    <div class="total-score">${total} / ${totalMaxScore}</div>
+                    <div>得分率 ${percent}% · 诊断：${diagnosis}</div>
+                    <div style="font-size:0.85rem; margin-top:6px;">🎯 核心卡点：${coreCard}</div>
+                </div>
+                <div class="dimension-grid">
+                    ${dimDetails.map(d => `
+                        <div class="dim-card">
+                            <div class="dim-name">${d.name}</div>
+                            <div class="dim-score">${d.score} / ${d.max}</div>
+                            <div class="progress-bar"><div class="progress-fill" style="width: ${(d.score/d.max)*100}%;"></div></div>
+                            <div style="font-size:0.7rem;"><strong>${d.level}</strong> ${d.suggestion}</div>
+                        </div>
+                    `).join('')}
+                </div>
+                <div class="insight">
+                    <strong>✨ 个性化分析</strong><br>
+                    您的孩子在「${strongest.name}」维度表现突出（${strongest.score}/${strongest.max}），这是提分的重要优势。<br>
+                    重点关注「${weakest.name}」维度（${weakest.score}/${weakest.max}），${weakest.suggestion}<br>
+                    ${dislikeSubject !== "未选择" ? `📌 孩子最不喜欢的学科是「${dislikeSubject}」，可能存在情绪抵触，建议从兴趣切入重建信心。` : ""}
+                    <hr style="margin: 0.8rem 0; border-top:1px solid #ffddb0;">
+                    <strong>💡 转化建议 · 龙江志愿专属</strong><br>
+                    根据诊断${diagnosis}，推荐 ${recommend}。199读书会12周陪伴，每周3次直播，系统提升方法、习惯与亲子认知。如需进一步解读，联系顾问获取专属方案。
+                </div>
+                <div style="font-size:0.7rem; text-align:center; margin-top:1rem; color:#9aaebf;">
+                    报告基于39项计分题生成（学科偏好题不计分）· 测评时间 ${new Date().toLocaleString()}
+                </div>
+            </div>
+        `;
+        return { insightHtml, total, diagnosis, recommend };
+    }
+
+    function onSubmit() {
+        const reportObj = generateReport();
+        if (!reportObj) return;
+        const reportContainer = document.getElementById('reportContainer');
+        reportContainer.innerHTML = reportObj.insightHtml;
+        reportContainer.style.display = 'block';
+        reportContainer.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        showToast("🎉 报告已生成！可截图保存或咨询顾问", "#eef3fc");
+    }
+
+    // 构建导航栏
+    function buildNav() {
+        const sections = ["AI卷面提分", "父母认知", "学生提分力认知", "提分训练习惯", "学科抵触度"];
+        const navDiv = document.getElementById('navTabs');
+        navDiv.innerHTML = '';
+        sections.forEach(sec => {
+            const btn = document.createElement('button');
+            btn.className = 'nav-btn';
+            btn.innerText = sec;
+            btn.addEventListener('click', () => {
+                const firstQ = questionsData.find(q => q.section === sec);
+                if (firstQ) {
+                    const el = document.getElementById(`q-${firstQ.id}`);
+                    if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }
+            });
+            navDiv.appendChild(btn);
+        });
+    }
+
+    // 初始化
+    function init() {
+        renderQuestions();
+        buildNav();
+        document.getElementById('resetBtn').addEventListener('click', resetAnswers);
+        document.getElementById('submitBtn').addEventListener('click', onSubmit);
+    }
+    init();
+</script>
+</body>
+</html>
